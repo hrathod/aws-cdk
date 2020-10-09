@@ -30,6 +30,7 @@ export enum Command {
   METADATA = 'metadata',
   INIT = 'init',
   VERSION = 'version',
+  AUDIT = 'audit',
 }
 
 const BUNDLING_COMMANDS = [
@@ -37,6 +38,7 @@ const BUNDLING_COMMANDS = [
   Command.DIFF,
   Command.SYNTH,
   Command.SYNTHESIZE,
+  Command.AUDIT,
 ];
 
 export type Arguments = {

@@ -65,6 +65,10 @@ async function parseCommandLineArguments() {
     .command(['list [STACKS..]', 'ls [STACKS..]'], 'Lists all stacks in the app', yargs => yargs
       .option('long', { type: 'boolean', default: false, alias: 'l', desc: 'Display environment information for each stack' }),
     )
+    .command(['audit [STACKS..]'], 'Audits the named stacks according to the provided audit configuration file', yargs => yargs
+      .option('auditfile', { type: 'string', alias: ['f', 'lint configuration file'], desc: 'The file describing linting rules for the CDK stacks' })
+      .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only deploy requested stacks, don\'t include dependencies' }))
+
     .command(['synthesize [STACKS..]', 'synth [STACKS..]'], 'Synthesizes and prints the CloudFormation template for this stack', yargs => yargs
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only synthesize requested stacks, don\'t include dependencies' }))
     .command('bootstrap [ENVIRONMENTS..]', 'Deploys the CDK toolkit stack into an AWS environment', yargs => yargs
@@ -333,6 +337,13 @@ async function initCommandLine() {
         }
       case 'version':
         return data(version.DISPLAY_VERSION);
+
+      case 'audit':
+        return cli.audit({
+          stackNames: args.STACKS,
+          exclusively: args.exclusively,
+          auditfile: args.auditfile,
+        });
 
       default:
         throw new Error('Unknown command: ' + command);

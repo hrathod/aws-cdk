@@ -76,6 +76,18 @@ export class CdkToolkit {
     return stacks.firstStack.manifest.metadata ?? {};
   }
 
+  public async audit(options: AuditOptions): Promise<number> {
+    const stacks = await this.selectStacksForDiff(options.stackNames, options.exclusively);
+    const auditData: { [id: string]: any} = {};
+    for (const stack of stacks.stackArtifacts) {
+      auditData[stack.id] = stack.template.Resources;
+    }
+
+    const auditfile = await import(options.auditfile);
+    const auditor = new auditfile.Auditor();
+    return auditor.audit(auditData);
+  }
+
   public async diff(options: DiffOptions): Promise<number> {
     const stacks = await this.selectStacksForDiff(options.stackNames, options.exclusively);
 
@@ -446,6 +458,12 @@ export class CdkToolkit {
     return this.props.cloudExecutable.synthesize();
   }
 
+}
+
+export interface AuditOptions {
+  stackNames: string[];
+  exclusively?: boolean;
+  auditfile: string;
 }
 
 export interface DiffOptions {
